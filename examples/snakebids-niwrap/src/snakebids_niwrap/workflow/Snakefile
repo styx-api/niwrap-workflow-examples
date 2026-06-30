@@ -1,0 +1,121 @@
+"""NiWrap + Snakebids example workflow.
+
+This Snakefile runs a minimal neuroimaging pipeline using Snakebids to discover
+BIDS inputs and NiWrap-wrapped FSL and ANTs tools. The pipeline performs
+skull-stripping, N4 bias-field correction, and template registration.
+"""
+
+# ---- begin snakebids boilerplate ----------------------------------------------
+
+from snakebids import bids, filter_list, generate_inputs, get_wildcard_constraints
+
+
+configfile: "config/snakebids.yml"
+
+
+# writes inputs_config.yml and updates config dict
+inputs = generate_inputs(
+    bids_dir=config["bids_dir"],
+    pybids_inputs=config["pybids_inputs"],
+    pybids_config=["bids", "derivatives"],
+    pybidsdb_dir=config.get("pybidsdb_dir"),
+    pybidsdb_reset=config.get("pybidsdb_reset"),
+    derivatives=config["derivatives"],
+    participant_label=config["participant_label"],
+    exclude_participant_label=config["exclude_participant_label"],
+)
+
+
+# this adds constraints to the bids naming
+wildcard_constraints:
+    **get_wildcard_constraints(config["pybids_inputs"]),
+
+
+# ---- end snakebids boilerplate ------------------------------------------------
+import shutil
+from pathlib import Path
+
+import niwrap
+from niwrap import ants, fsl
+
+TEMPLATE = "MNI152NLin2009cAsym"
+
+# Template directory
+tpl_dir = Path(config.get("bids_dir")).parent / "templateflow"
+
+# Output directory where preprocess/ and registration/ results are written.
+output_dir = Path(config.get("output_dir"))
+output_dir.mkdir(parents=True, exist_ok=True)
+
+# Setup niwrap
+niwrap.use_auto()
+
+
+rule anatomical_preprocess:
+    """Skull-strip and bias-field correct a subject's T1w image."""
+    input:
+        t1w=inputs["T1w"].path,
+    output:
+        preproc_t1w=output_dir
+        / "preprocess"
+        / bids(
+            datatype="anat",
+            desc="preproc",
+            suffix="T1w",
+            extension=".nii.gz",
+            **inputs.subj_wildcards,
+        ),
+    params:
+        bet_fractional_intensity=config.get("bet_fractional_intensity"),
+    run:
+        # Execute preprocessing
+        bet = fsl.bet(
+            infile=input.t1w,
+            fractional_intensity=params.bet_fractional_intensity,
+        )
+        n4 = ants.n4_bias_field_correction(
+            input_image=bet.outfile,
+            image_dimensionality=3,
+            output=ants.n4_bias_field_correction_corrected_output_params(
+                corrected_output_file_name=Path(output.preproc_t1w).name
+            ),
+        )
+        # Copy desired outputs to output directory
+        Path(output.preproc_t1w).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(n4.output_image_outfile, output.preproc_t1w)
+
+
+rule registration_to_template:
+    """Register the preprocessed T1w image to the template space."""
+    input:
+        preproc_t1w=rules.anatomical_preprocess.output.preproc_t1w,
+        template_t1w=f"{tpl_dir}/tpl-{TEMPLATE}/tpl-{TEMPLATE}_res-01_T1w.nii.gz",
+    output:
+        xfm_t1w=output_dir
+        / "registration"
+        / bids(
+            datatype="anat",
+            space=TEMPLATE,
+            desc="preproc",
+            suffix="T1w",
+            extension=".nii.gz",
+            **inputs.subj_wildcards,
+        ),
+    run:
+        # Execute preprocessing
+        xfm_prefix = "t1w_to_template_"
+        xfm = ants.ants_registration_sy_n_quick_sh(
+            dimensionality=3,
+            fixed_image=input.template_t1w,
+            moving_image=input.preproc_t1w,
+            output_prefix=xfm_prefix,
+        )
+        # ANTs registration does not attribute individual outputs when using niwrap,
+        # so copy using root
+        shutil.copy2(xfm.root / f"{xfm_prefix}Warped.nii.gz", output.xfm_t1w)
+
+
+rule all:
+    """Collect the final registered images for all subjects."""
+    input:
+        inputs["T1w"].expand(rules.registration_to_template.output.xfm_t1w),

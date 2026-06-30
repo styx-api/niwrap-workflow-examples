@@ -12,7 +12,13 @@ classifiers = [
 dependencies = []
 
 [dependency-groups]
-dev = ["deptry>=0.25.1", "prek>=0.4.5", "ruff>=0.15.20", "ty>=0.0.55"]
+dev = [
+  "deptry>=0.25.1",
+  "prek>=0.4.5",
+  "ruff>=0.15.20",
+  "snakefmt>=2.0.3",
+  "ty>=0.0.55"
+]
 
 [tool.uv]
 package = false

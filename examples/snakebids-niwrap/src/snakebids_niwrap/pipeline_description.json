@@ -1,0 +1,14 @@
+{
+    "Name": "SnakebidsXNiwrap",
+    "BIDSVersion": "1.9.0",
+    "DatasetType": "derivative",
+    "GeneratedBy": [
+        {
+            "Name": "SnakebidsXNiwrap",
+            "Version": "0.1.0",
+            "CodeURL": "https://github.com/styx-api/niwrap-workflow-examples",
+            "Author": "Jason Kai",
+            "AuthorEmail": "21226986+kaitj@users.noreply.github.com"
+        }
+    ]
+}

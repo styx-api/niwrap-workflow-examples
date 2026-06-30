@@ -19,6 +19,7 @@ Run from the repository root:
 | Engine | Command |
 | --- | --- |
 | snakemake | `uv run snakemake --snakefile examples/snakemake-niwrap/src/snakemake_niwrap/Snakefile --cores 1` |
+| snakebids | `uv run snakebids-niwrap /path/to/bids /path/to/output participant --cores 1` |
 
 ## Examples
 
@@ -27,6 +28,7 @@ Run from the repository root:
 | [`dagster`](examples/dagster-niwrap) | Orchestration platform ([website](https://dagster.io/)) |
 | [`nextflow`](examples/nextflow-niwrap) | DSL for data-driven computational pipelines ([website](https://github.com/nextflow-io/nextflow)) |
 | [`snakemake`](examples/snakemake-niwrap) | Workflow management tool to create reproducible and scalable data analysis ([website](https://snakemake.github.io/)) |
+| [`snakebids`](examples/snakebids-niwrap) | BIDS app framework built on Snakemake ([website](https://snakebids.readthedocs.io/)) |
 
 ## Development
 
