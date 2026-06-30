@@ -12,6 +12,14 @@ These are intentionally simple examples that demonstrate chaining two steps
 (preprocessing and registration) with NiWrap and different workflow enngines.
 They are starting points for building more complex workflows.
 
+## Running an example
+
+Run from the repository root:
+
+| Engine | Command |
+| --- | --- |
+| snakemake | `uv run snakemake --snakefile examples/snakemake-niwrap/src/snakemake_niwrap/Snakefile --cores 1` |
+
 ## Examples
 
 | Workflow engine | Description |

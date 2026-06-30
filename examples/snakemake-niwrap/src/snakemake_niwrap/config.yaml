@@ -1,0 +1,12 @@
+# Replace paths with input and desired output data locations.
+# Paths are relative to the workflow directory, where the Snakefile
+# is located, unless absolute path is provided
+data_dir: examples/.data # Path to example dataset
+output_dir: /path/to/output/dir # Replace with desired output directory
+
+# Constants
+subject: # List of subjects to process
+- '01'
+
+# Tool parameters
+bet_fractional_intensity:

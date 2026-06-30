@@ -16,3 +16,7 @@ build/
 # Caches
 .mypy_cache/
 .pytest_cache/
+
+# Example created directories
+styx_tmp/
+.snakemake/
