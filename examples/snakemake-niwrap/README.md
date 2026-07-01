@@ -12,12 +12,15 @@ uv sync --all-packages
 
 ## Run
 
-Change into the directory containing the `Snakefile`:
+From the repository root:
 
 ```bash
-cd examples/snakemake-niwrap/src/snakemake_niwrap
-uv run snakemake --cores 1
+uv run snakemake -s examples/snakemake-niwrap/src/snakemake_niwrap/Snakefile --cores 1
 ```
+
+> **Windows users:** Snakemake's metadata filenames can exceed the 260-character
+> `MAX_PATH` limit for deep output directories. Use a short `output_dir` (e.g.
+> `C:\out`), enable Windows long paths (`core.longpaths`), or run under WSL.
 
 ## Configuration
 
@@ -28,8 +31,8 @@ Edit [`config.yaml`](src/snakemake_niwrap/config.yaml) before running:
 - `subject`: list of subject labels to process.
 - `bet_fractional_intensity`: fractional intensity threshold for FSL BET.
 
-Paths are relative to the workflow directory (where the `Snakefile` is located)
-unless an absolute path is provided.
+Relative paths are resolved from the directory you invoke `snakemake` from
+(the repository root, per the command above). Absolute paths may also be provided.
 
 ## Dependencies
 
@@ -46,4 +49,10 @@ The `Snakefile` is formatted with [`snakefmt`](https://github.com/snakemake/snak
 uv tool run snakefmt src/snakemake_niwrap/Snakefile
 ```
 
-`ruff` does not lint Snakemake files; this example contains no other Python files.
+Python scripts under [`scripts/`](src/snakemake_niwrap/scripts) are linted and
+formatted with `ruff` from the workspace root:
+
+```bash
+uv run ruff check
+uv run ruff format --check
+```

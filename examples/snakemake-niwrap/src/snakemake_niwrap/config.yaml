@@ -1,8 +1,8 @@
-# Replace paths with input and desired output data locations.
-# Paths are relative to the workflow directory, where the Snakefile
-# is located, unless absolute path is provided
+# Replace paths with your input and output data locations.
+# Relative paths are resolved from the directory you run `snakemake` from
+# (the repository root, per the README) — not from the Snakefile's directory.
 data_dir: examples/.data # Path to example dataset
-output_dir: /path/to/output/dir # Replace with desired output directory
+output_dir: output # Directory where results are written
 
 # Constants
 subject: # List of subjects to process
