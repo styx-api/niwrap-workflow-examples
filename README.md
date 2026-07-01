@@ -8,6 +8,10 @@ Each example implements the same minimal neuroimaging pipeline:
 2. **N4 bias-field correction** — correct intensity inhomogeneity with ANTs.
 3. **Template registration** — register the preprocessed T1w to MNI152NLin2009cAsym with ANTs.
 
+These are intentionally simple examples that demonstrate chaining two steps
+(preprocessing and registration) with NiWrap and different workflow enngines.
+They are starting points for building more complex workflows.
+
 ## Examples
 
 | Workflow engine | Description |
