@@ -18,6 +18,7 @@ Run from the repository root:
 
 | Engine | Command |
 | --- | --- |
+| nextflow | `nextflow run examples/nextflow-niwrap/main.nf` |
 | snakemake | `uv run snakemake --snakefile examples/snakemake-niwrap/src/snakemake_niwrap/Snakefile --cores 1` |
 | snakebids | `uv run snakebids-niwrap /path/to/bids /path/to/output participant --cores 1` |
 

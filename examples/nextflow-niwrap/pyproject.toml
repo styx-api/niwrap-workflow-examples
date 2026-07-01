@@ -1,0 +1,11 @@
+[project]
+name = "nextflow-niwrap"
+version = "0.0.0"
+description = "Demo of NiWrap using Nextflow"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = ["niwrap>=1.0.4"]
+
+[build-system]
+requires = ["uv_build>=0.8.13,<0.10.0"]
+build-backend = "uv_build"
