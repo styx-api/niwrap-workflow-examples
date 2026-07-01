@@ -2,15 +2,16 @@
 
 This Snakefile runs a minimal neuroimaging pipeline using Snakebids to discover
 BIDS inputs and NiWrap-wrapped FSL and ANTs tools. The pipeline performs
-skull-stripping, N4 bias-field correction, and template registration.
+skull-stripping, N4 bias-field correction, and template registration. Tool
+execution is delegated to Python scripts under ``scripts/``.
 """
 
 # ---- begin snakebids boilerplate ----------------------------------------------
 
-from snakebids import bids, filter_list, generate_inputs, get_wildcard_constraints
+from snakebids import bids, generate_inputs, get_wildcard_constraints
 
 
-configfile: "config/snakebids.yml"
+configfile: "config/snakebids.yaml"
 
 
 # writes inputs_config.yml and updates config dict
@@ -32,11 +33,7 @@ wildcard_constraints:
 
 
 # ---- end snakebids boilerplate ------------------------------------------------
-import shutil
 from pathlib import Path
-
-import niwrap
-from niwrap import ants, fsl
 
 TEMPLATE = "MNI152NLin2009cAsym"
 
@@ -45,10 +42,6 @@ tpl_dir = Path(config.get("bids_dir")).parent / "templateflow"
 
 # Output directory where preprocess/ and registration/ results are written.
 output_dir = Path(config.get("output_dir"))
-output_dir.mkdir(parents=True, exist_ok=True)
-
-# Setup niwrap
-niwrap.use_auto()
 
 
 rule anatomical_preprocess:
@@ -67,22 +60,8 @@ rule anatomical_preprocess:
         ),
     params:
         bet_fractional_intensity=config.get("bet_fractional_intensity"),
-    run:
-        # Execute preprocessing
-        bet = fsl.bet(
-            infile=input.t1w,
-            fractional_intensity=params.bet_fractional_intensity,
-        )
-        n4 = ants.n4_bias_field_correction(
-            input_image=bet.outfile,
-            image_dimensionality=3,
-            output=ants.n4_bias_field_correction_corrected_output_params(
-                corrected_output_file_name=Path(output.preproc_t1w).name
-            ),
-        )
-        # Copy desired outputs to output directory
-        Path(output.preproc_t1w).parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(n4.output_image_outfile, output.preproc_t1w)
+    script:
+        "scripts/preprocess.py"
 
 
 rule registration_to_template:
@@ -101,18 +80,8 @@ rule registration_to_template:
             extension=".nii.gz",
             **inputs.subj_wildcards,
         ),
-    run:
-        # Execute preprocessing
-        xfm_prefix = "t1w_to_template_"
-        xfm = ants.ants_registration_sy_n_quick_sh(
-            dimensionality=3,
-            fixed_image=input.template_t1w,
-            moving_image=input.preproc_t1w,
-            output_prefix=xfm_prefix,
-        )
-        # ANTs registration does not attribute individual outputs when using niwrap,
-        # so copy using root
-        shutil.copy2(xfm.root / f"{xfm_prefix}Warped.nii.gz", output.xfm_t1w)
+    script:
+        "scripts/register.py"
 
 
 rule all:

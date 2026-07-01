@@ -33,6 +33,10 @@ Edit [`src/snakebids_niwrap/config/snakebids.yaml`](src/snakebids_niwrap/config/
 - `pybids_inputs`: inputs discovered by PyBIDS.
 - `parse_args`: additional CLI arguments (e.g., `--bet_fractional_intensity`).
 
+The workflow expects a `templateflow/` directory as a sibling of `bids_dir` with
+a `tpl-MNI152NLin2009cAsym/tpl-MNI152NLin2009cAsym_res-01_T1w.nii.gz` template
+file for registration.
+
 ## Dependencies
 
 - `niwrap>=1.0.4`
