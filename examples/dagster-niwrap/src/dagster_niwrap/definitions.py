@@ -2,6 +2,6 @@
 
 import dagster as dg
 
-from dagster_niwrap.pipeline import niwrap_job
+from dagster_niwrap.pipeline import anatomical_preprocess, registered_t1w
 
-defs = dg.Definitions(jobs=[niwrap_job])
+defs = dg.Definitions(assets=[anatomical_preprocess, registered_t1w])
