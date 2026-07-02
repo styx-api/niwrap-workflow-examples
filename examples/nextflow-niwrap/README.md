@@ -32,15 +32,17 @@ Or with custom parameters:
 nextflow run main.nf \
     --data_dir /path/to/data \
     --output_dir /path/to/output \
-    --subject 01 \
     --bet_fractional_intensity 0.5
 ```
+
+To process multiple subjects, edit the `subject` list in
+[`nextflow.config`](nextflow.config).
 
 ## Python environment
 
 The helper scripts in `src/nextflow_niwrap/` use NiWrap, so the Python
-environment that Nextflow sees must have `niwrap`, `niwrap-fsl`, and
-`niwrap-ants` installed.
+environment that Nextflow sees must have `niwrap` installed. The `niwrap`
+meta-package pulls in `niwrap-fsl` and `niwrap-ants` transitively.
 
 By default, `nextflow.config` sets:
 
@@ -60,7 +62,7 @@ line:
 
 - `data_dir`: directory containing `ds000001/` and `templateflow/`.
 - `output_dir`: directory where `preprocess/` and `registration/` results are written.
-- `subject`: subject label to process (e.g., `01`).
+- `subject`: list of subject labels to process (e.g., `['01']`).
 - `template`: template name (default: `MNI152NLin2009cAsym`).
 - `bet_fractional_intensity`: fractional intensity threshold for FSL BET.
 

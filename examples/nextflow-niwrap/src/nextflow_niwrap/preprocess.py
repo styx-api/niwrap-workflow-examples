@@ -56,8 +56,9 @@ def main() -> None:
             corrected_output_file_name=args.output.name
         ),
     )
+
     if n4.output_image_outfile is None:
-        raise FileNotFoundError("Bias-field corrected output not found.")
+        raise FileNotFoundError("Bias corrected image not found.")
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(n4.output_image_outfile, args.output)

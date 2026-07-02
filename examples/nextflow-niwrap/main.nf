@@ -13,55 +13,66 @@
 nextflow.enable.dsl = 2
 
 
-process anatomical_preprocess {
+process ANATOMICAL_PREPROCESS {
     /* Skull-strip and bias-field correct a subject's T1w image. */
 
     publishDir "${params.output_dir}/preprocess", mode: 'copy'
 
     input:
-        path t1w
+        tuple val(meta), path(t1w)
 
     output:
-        path "sub-${params.subject}_desc-preproc_T1w.nii.gz", emit: preproc_t1w
+        tuple val(meta), path("sub-${meta.subject}_desc-preproc_T1w.nii.gz"), emit: preproc_t1w
 
     script:
-    def bet_fi = params.bet_fractional_intensity != null ? params.bet_fractional_intensity : 'None'
+    def bet_arg = params.bet_fractional_intensity != null ? "--bet-fractional-intensity ${params.bet_fractional_intensity}" : ""
     """
     ${params.python_cmd} ${projectDir}/src/nextflow_niwrap/preprocess.py \\
         --t1w "${t1w}" \\
-        --output "sub-${params.subject}_desc-preproc_T1w.nii.gz" \\
-        ${bet_fi != 'None' ? "--bet-fractional-intensity ${bet_fi}" : ""}
+        --output "sub-${meta.subject}_desc-preproc_T1w.nii.gz" \\
+        ${bet_arg}
     """
 }
 
 
-process registration_to_template {
+process REGISTRATION_TO_TEMPLATE {
     /* Register the preprocessed T1w image to the template space. */
 
     publishDir "${params.output_dir}/registration", mode: 'copy'
 
     input:
-        path preproc_t1w
+        tuple val(meta), path(preproc_t1w), path(template_t1w)
 
     output:
-        path "sub-${params.subject}_space-${params.template}_desc-preproc_T1w.nii.gz", emit: xfm_t1w
+        tuple val(meta), path("sub-${meta.subject}_space-${params.template}_desc-preproc_T1w.nii.gz"), emit: xfm_t1w
 
     script:
-    def template_t1w = "${params.data_dir}/templateflow/tpl-${params.template}/tpl-${params.template}_res-01_T1w.nii.gz"
     """
     ${params.python_cmd} ${projectDir}/src/nextflow_niwrap/register.py \\
         --moving "${preproc_t1w}" \\
         --fixed "${template_t1w}" \\
-        --output "sub-${params.subject}_space-${params.template}_desc-preproc_T1w.nii.gz"
+        --output "sub-${meta.subject}_space-${params.template}_desc-preproc_T1w.nii.gz"
     """
 }
 
 
 workflow {
-    t1w_ch = Channel.fromPath(
-        "${params.data_dir}/ds000001/sub-${params.subject}/anat/sub-${params.subject}_T1w.nii.gz"
+    def subjects = params.subject instanceof List ? params.subject : [params.subject]
+
+    t1w_ch = Channel.fromList(subjects)
+        .map { subject ->
+            tuple(
+                [subject: subject],
+                file("${params.data_dir}/ds000001/sub-${subject}/anat/sub-${subject}_T1w.nii.gz")
+            )
+        }
+
+    template_ch = Channel.fromPath(
+        "${params.data_dir}/templateflow/tpl-${params.template}/tpl-${params.template}_res-01_T1w.nii.gz"
     )
 
-    anatomical_preprocess(t1w_ch)
-        | registration_to_template
+    ANATOMICAL_PREPROCESS(t1w_ch)
+    REGISTRATION_TO_TEMPLATE(
+        ANATOMICAL_PREPROCESS.out.preproc_t1w.combine(template_ch)
+    )
 }
