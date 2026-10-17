@@ -9,8 +9,16 @@ Each example implements the same minimal neuroimaging pipeline:
 3. **Template registration** — register the preprocessed T1w to MNI152NLin2009cAsym with ANTs.
 
 These are intentionally simple examples that demonstrate chaining two steps
-(preprocessing and registration) with NiWrap and different workflow enngines.
+(preprocessing and registration) with NiWrap and different workflow engines.
 They are starting points for building more complex workflows.
+
+## Running an example
+
+Run from the repository root:
+
+| Engine | Command |
+| --- | --- |
+| snakemake | `uv run snakemake --snakefile examples/snakemake-niwrap/src/snakemake_niwrap/Snakefile --cores 1` |
 
 ## Examples
 

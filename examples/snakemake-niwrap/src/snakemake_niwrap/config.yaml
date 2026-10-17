@@ -1,0 +1,12 @@
+# Replace paths with your input and output data locations.
+# Relative paths are resolved from the directory you run `snakemake` from
+# (the repository root, per the README) — not from the Snakefile's directory.
+data_dir: examples/.data # Path to example dataset
+output_dir: output # Directory where results are written
+
+# Constants
+subject: # List of subjects to process
+- '01'
+
+# Tool parameters
+bet_fractional_intensity:
