@@ -70,6 +70,14 @@ unfixable = []
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
+[tool.ruff.lint.isort]
+known-first-party = [
+  "dagster_niwrap",
+  "nextflow_niwrap",
+  "snakebids_niwrap",
+  "snakemake_niwrap"
+]
+
 [tool.ruff.lint.per-file-ignores]
 
 [tool.ty]

@@ -1,0 +1,19 @@
+{
+    "ops": {
+        "anatomical_preprocess": {
+            "config": {
+                "data_dir": "examples/.data",
+                "output_dir": "examples/dagster-niwrap/output",
+                "subject": "01",
+                "bet_fractional_intensity": 0.5
+            }
+        },
+        "registered_t1w": {
+            "config": {
+                "data_dir": "examples/.data",
+                "output_dir": "examples/dagster-niwrap/output",
+                "subject": "01"
+            }
+        }
+    }
+}
