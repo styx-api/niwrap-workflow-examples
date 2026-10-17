@@ -12,6 +12,7 @@ resolution-markers = [
 
 [manifest]
 members = [
+    "nextflow-niwrap",
     "niwrap-workflow-examples",
     "snakebids-niwrap",
     "snakemake-niwrap",
@@ -795,6 +796,17 @@ sdist = { url = "https://files.pythonhosted.org/packages/31/72/b3446efab8756e7df
 wheels = [
     { url = "https://files.pythonhosted.org/packages/1a/69/ee613f74085ca7103f79cd08d579c4f3177d1d26e5d3d9528d2d6536a707/nbformat-5.11.1-py3-none-any.whl", hash = "sha256:cc6698fa75f4fab8755ead786317815f13a6fee3b53311c0abb1a8b51d52f7ec", size = 79849, upload-time = "2026-08-17T08:10:50.18Z" },
 ]
+
+[[package]]
+name = "nextflow-niwrap"
+version = "0.0.0"
+source = { editable = "examples/nextflow-niwrap" }
+dependencies = [
+    { name = "niwrap" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "niwrap", specifier = ">=1.0.4" }]
 
 [[package]]
 name = "nibabel"
